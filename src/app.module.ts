@@ -7,8 +7,6 @@ import { RolesModule } from './roles/roles.module';
 import { Role } from './roles/roles.model';
 import { UserRoles } from './roles/user-roles.model';
 import { AuthModule } from './auth/auth.module';
-import { PostsService } from './posts/posts.service';
-import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
 import { Post } from './posts/posts.model';
 import { FilesModule } from './files/files.module';
@@ -16,6 +14,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 
 @Module({
+  providers: [],
+  controllers: [],
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
@@ -39,7 +39,5 @@ import * as path from 'path';
       rootPath: path.resolve(__dirname, 'static'),
     }),
   ],
-  providers: [PostsService],
-  controllers: [PostsController],
 })
 export class AppModule {}

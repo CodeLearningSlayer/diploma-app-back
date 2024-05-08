@@ -18,6 +18,6 @@ export class PostsController {
     FileFieldsInterceptor([{ name: 'picture' }, { name: 'video' }]),
   )
   createPost(@Body() dto: CreatePostDto, @UploadedFiles() files) {
-    return this.postsService.create(dto, image);
+    return this.postsService.create(dto, files);
   }
 }
