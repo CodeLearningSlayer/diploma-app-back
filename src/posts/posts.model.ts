@@ -17,7 +17,7 @@ interface PostCreationAttrs {
   image: string;
 }
 
-@Table({ tableName: 'users' })
+@Table({ tableName: 'posts' })
 export class Post extends Model<Post, PostCreationAttrs> {
   @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
   @Column({

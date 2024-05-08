@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async login(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
+    const user = await this.validateUser(userDto.email, userDto.password);
     return this.generateToken(user);
   }
 
@@ -40,21 +40,25 @@ export class AuthService {
   async generateToken(user: User) {
     const payload = { email: user.email, id: user.id, roles: user.roles };
     return {
-      token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
 
-  private async validateUser(userDto: CreateUserDto) {
-    const user = await this.usersService.getUserByEmail(userDto.email);
-    const passwordEquals = await bcrypt.compare(
-      userDto.password,
-      user.password,
-    );
-    console.log(user);
-    console.log(userDto.password, user.password);
+  async validateUser(email: string, password: string) {
+    const user = await this.usersService.getUserByEmail(email);
+    const passwordEquals = await bcrypt.compare(password, user.password);
     if (user && passwordEquals) {
       return user;
     }
     throw new UnauthorizedException({ message: 'Invalid email or password' });
+  }
+
+  async refreshToken(user: User) {
+    console.log(user, 'USER');
+    const payload = { email: user.email, id: user.id, roles: user.roles };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 }
