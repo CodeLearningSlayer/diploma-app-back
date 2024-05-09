@@ -32,7 +32,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получение списка пользователей' })
   @ApiResponse({ status: 200, type: [User] })
-  @Roles('Admin')
+  // @Roles('Admin')
   // @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get()
