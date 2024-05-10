@@ -18,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
         secret: configService.get('secret'),
         signOptions: {
           expiresIn: '180s',
+          notBefore: '1s',
         },
       }),
       inject: [ConfigService],

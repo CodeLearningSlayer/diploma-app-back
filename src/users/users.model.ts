@@ -5,11 +5,12 @@ import {
   Table,
   Model,
   BelongsToMany,
-  HasMany,
+  HasOne,
 } from 'sequelize-typescript';
+
+import { Profile } from 'src/profile/profile.model';
 import { Role } from 'src/roles/roles.model';
 import { UserRoles } from 'src/roles/user-roles.model';
-import { Post } from 'src/posts/posts.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -26,6 +27,7 @@ export class User extends Model<User, UserCreationAttrs> {
     primaryKey: true,
   })
   id: number;
+
   @ApiProperty({ example: 'mail@ya.ru', description: 'Эл. почта' })
   @Column({
     type: DataType.STRING,
@@ -33,18 +35,21 @@ export class User extends Model<User, UserCreationAttrs> {
     allowNull: false,
   })
   email: string;
+
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   password: string;
+
   @ApiProperty({ example: 'false', description: 'Флаг блокировки' })
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
   banned: boolean;
+
   @ApiProperty({ example: 'Причина пи', description: 'Причина блокировки' })
   @Column({
     type: DataType.STRING,
@@ -52,9 +57,9 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   banReason: string;
 
+  @HasOne(() => Profile)
+  profile: Profile;
+
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
-
-  @HasMany(() => Post)
-  posts: Post[];
 }

@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/users.model';
-import { UsersService } from 'src/users/users.service';
+import { InjectModel } from '@nestjs/sequelize';
+import { Profile } from './profile.model';
+import { CreateProfileDto } from './dto/create-profile';
 
 @Injectable()
 export class ProfileService {
   constructor(
-    private userService: UsersService,
-    private jwtService: JwtService,
+    @InjectModel(Profile) private profileRepository: typeof Profile,
   ) {}
 
-  async getMyAccount(user: User) {
-    return await this.userService.getUserByEmail(user.email);
+  async createProfile(dto: CreateProfileDto) {
+    const profile = await this.profileRepository.create(dto);
+    return profile;
   }
 }

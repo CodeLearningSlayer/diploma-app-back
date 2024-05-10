@@ -10,11 +10,11 @@ import { User } from 'src/users/users.model';
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
-  @ApiOperation({ summary: 'Получение моего профиля' })
-  @Get('/me')
-  @UseGuards(JwtAuthGuard)
-  getMyAccount(@Req() req: Request & { user: User }) {
-    console.log(req);
-    return this.profileService.getMyAccount(req.user);
-  }
+  // @ApiOperation({ summary: 'Получение моего профиля' })
+  // @Get('/me')
+  // @UseGuards(JwtAuthGuard)
+  // getMyAccount(@Req() req: Request & { user: User }) {
+  //   console.log(req);
+  //   return this.profileService.getMyAccount(req.user);
+  // }
 }
