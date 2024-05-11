@@ -23,8 +23,8 @@ export class AuthService {
   }
 
   async registration(userDto: CreateUserDto) {
+    console.log(userDto);
     const candidate = await this.usersService.getUserByEmail(userDto.email);
-    console.log(candidate);
     if (candidate) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
@@ -47,6 +47,12 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      console.log('NOT USER');
+      throw new HttpException('User not exist', HttpStatus.BAD_REQUEST);
+    }
+    console.log(email, password, 'REQUISITES');
+    console.log(user);
     const passwordEquals = await bcrypt.compare(password, user.password);
     if (user && passwordEquals) {
       return user;

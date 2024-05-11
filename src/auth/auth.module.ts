@@ -6,17 +6,22 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { RefreshStrategy } from './strategies/refresh-strategy';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, RefreshStrategy],
   imports: [
     forwardRef(() => UsersModule),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret',
-      signOptions: {
-        expiresIn: '20s',
-      },
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('secret'),
+        signOptions: {
+          expiresIn: '180s',
+          notBefore: '1s',
+        },
+      }),
+      inject: [ConfigService],
     }),
   ],
   exports: [AuthService, JwtModule],

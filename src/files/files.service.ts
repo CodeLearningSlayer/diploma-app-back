@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as uuid from 'uuid';
@@ -9,7 +10,8 @@ export enum FileType {
 }
 @Injectable()
 export class FilesService {
-  async createFile(type: FileType, file): Promise<string> {
+  constructor(private configService: ConfigService) {}
+  async createFile(type: FileType, file: Express.Multer.File): Promise<string> {
     try {
       // TODO внести Multer, переписать всё
       const fileExtension = file.originalname.split('.').pop();
@@ -26,5 +28,14 @@ export class FilesService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async uploadImage(imageFileName: string) {
+    const imageUrl = `${process.env.APP_URL}:${process.env.PORT}/${imageFileName}`;
+    return {
+      status: HttpStatus.OK,
+      message: 'Image uploaded successfully!',
+      data: imageUrl,
+    };
   }
 }

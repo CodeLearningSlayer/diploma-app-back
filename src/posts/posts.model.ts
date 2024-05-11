@@ -7,8 +7,7 @@ import {
   BelongsTo,
   ForeignKey,
 } from 'sequelize-typescript';
-import { Role } from 'src/roles/roles.model';
-import { User } from 'src/users/users.model';
+import { Profile } from 'src/profile/profile.model';
 
 interface PostCreationAttrs {
   title: string;
@@ -27,6 +26,7 @@ export class Post extends Model<Post, PostCreationAttrs> {
     primaryKey: true,
   })
   id: number;
+
   @ApiProperty({ example: 'mail@ya.ru', description: 'Эл. почта' })
   @Column({
     type: DataType.STRING,
@@ -34,6 +34,7 @@ export class Post extends Model<Post, PostCreationAttrs> {
     allowNull: false,
   })
   title: string;
+
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({
     type: DataType.STRING,
@@ -41,10 +42,10 @@ export class Post extends Model<Post, PostCreationAttrs> {
   })
   content: string;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => Profile)
   @Column({ type: DataType.INTEGER })
-  userId: number;
+  profileId: number;
 
-  @BelongsTo(() => User)
-  roles: Role[];
+  @BelongsTo(() => Profile)
+  profile: Profile;
 }

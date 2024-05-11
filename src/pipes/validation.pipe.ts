@@ -4,6 +4,7 @@ import { validate } from 'class-validator';
 import { ValidationException } from 'src/exceptions/validation.exception';
 
 @Injectable()
+// ! Pipe для валидации формы
 export class ValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
     const obj = plainToClass(metadata.metatype, value);
