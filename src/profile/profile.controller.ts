@@ -1,8 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Put, Req, UseGuards, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
 import { ProfileService } from './profile.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { StartProfileDto } from './dto/start-profile';
 import { User } from 'src/users/users.model';
 
 @ApiTags('Профиль')
@@ -10,11 +10,17 @@ import { User } from 'src/users/users.model';
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
-  // @ApiOperation({ summary: 'Получение моего профиля' })
-  // @Get('/me')
-  // @UseGuards(JwtAuthGuard)
-  // getMyAccount(@Req() req: Request & { user: User }) {
-  //   console.log(req);
-  //   return this.profileService.getMyAccount(req.user);
-  // }
+  @ApiOperation({ summary: 'Старт профиля' })
+  @Put('/start')
+  @UseGuards(JwtAuthGuard)
+  startProfile(@Req() req, @Body() startProfileDto: StartProfileDto) {
+    return this.profileService.startProfile(startProfileDto, req.user.id);
+  }
+
+  @ApiOperation({ summary: 'Получение моего профиля' })
+  @Get('/me')
+  @UseGuards(JwtAuthGuard)
+  getMyAccount(@Req() req: Request & { user: User }) {
+    return this.profileService.getMyAccount(req.user.id);
+  }
 }

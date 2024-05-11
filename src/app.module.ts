@@ -15,6 +15,7 @@ import { ProfileModule } from './profile/profile.module';
 import configurations from './config';
 import * as path from 'path';
 import { Profile } from './profile/profile.model';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   providers: [],
@@ -40,6 +41,9 @@ import { Profile } from './profile/profile.model';
     }),
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
+    }),
+    MulterModule.register({
+      dest: './uploads',
     }),
     UsersModule,
     RolesModule,
