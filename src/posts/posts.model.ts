@@ -10,10 +10,10 @@ import {
 import { Profile } from 'src/profile/profile.model';
 
 interface PostCreationAttrs {
-  title: string;
-  content: string;
-  userId: number;
-  image: string;
+  text: string;
+  profileId: number;
+  images: string[];
+  videos: string[];
 }
 
 @Table({ tableName: 'posts' })
@@ -33,14 +33,28 @@ export class Post extends Model<Post, PostCreationAttrs> {
     unique: true,
     allowNull: false,
   })
-  title: string;
+  text: string;
 
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.ARRAY(DataType.STRING),
+    allowNull: true,
   })
-  content: string;
+  images: string[];
+
+  @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
+  @Column({
+    type: DataType.ARRAY(DataType.STRING),
+    allowNull: true,
+  })
+  videos: string[];
+
+  @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: true,
+  })
+  event: string;
 
   @ForeignKey(() => Profile)
   @Column({ type: DataType.INTEGER })

@@ -38,4 +38,6 @@ export class FilesService {
       data: imageUrl,
     };
   }
+
+  async uploadMultipleImages() {}
 }

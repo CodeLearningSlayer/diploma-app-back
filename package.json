@@ -48,6 +48,7 @@
     "sequelize-typescript": "^2.1.6",
     "sharp": "^0.33.3",
     "swagger-ui-express": "^5.0.0",
+    "unique-slug": "^4.0.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -60,6 +61,7 @@
     "@types/node": "^20.3.1",
     "@types/sequelize": "^4.28.20",
     "@types/supertest": "^6.0.0",
+    "@types/unique-slug": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",

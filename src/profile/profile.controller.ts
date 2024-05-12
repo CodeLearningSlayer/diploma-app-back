@@ -1,4 +1,12 @@
-import { Body, Controller, Put, Req, UseGuards, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Put,
+  Req,
+  UseGuards,
+  Get,
+  Param,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -22,5 +30,19 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   getMyAccount(@Req() req: Request & { user: User }) {
     return this.profileService.getMyAccount(req.user.id);
+  }
+
+  @ApiOperation({ summary: 'Получение моего профиля' })
+  @Get('/:slug')
+  // @UseGuards(JwtAuthGuard)
+  GetUserBySlug(@Param() params: { slug: string }) {
+    return this.profileService.getProfileBySlug(params.slug);
+  }
+
+  @ApiOperation({ summary: 'Получение моего профиля' })
+  @Get('/:slug/posts')
+  // @UseGuards(JwtAuthGuard)
+  GetProfilePosts(@Param() params: { slug: string }) {
+    return this.profileService.getProfileBySlug(params.slug);
   }
 }
