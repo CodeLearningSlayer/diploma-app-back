@@ -13,7 +13,10 @@ interface PostCreationAttrs {
   text: string;
   profileId: number;
   images: string[];
-  videos: string[];
+  videos: Array<{
+    video: string;
+    thumbnail: string;
+  }>;
 }
 
 @Table({ tableName: 'posts' })
@@ -30,7 +33,6 @@ export class Post extends Model<Post, PostCreationAttrs> {
   @ApiProperty({ example: 'mail@ya.ru', description: 'Эл. почта' })
   @Column({
     type: DataType.STRING,
-    unique: true,
     allowNull: false,
   })
   text: string;
@@ -44,10 +46,13 @@ export class Post extends Model<Post, PostCreationAttrs> {
 
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.ARRAY(DataType.JSON),
     allowNull: true,
   })
-  videos: string[];
+  videos: Array<{
+    video: string;
+    thumbnail: string;
+  }>;
 
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({

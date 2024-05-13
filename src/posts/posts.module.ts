@@ -8,6 +8,7 @@ import { Profile } from 'src/profile/profile.model';
 import { User } from 'src/users/users.model';
 import { ProfileModule } from 'src/profile/profile.module';
 import { JwtService } from '@nestjs/jwt';
+import { FirebaseModule } from 'src/firebase/firebase.module';
 
 @Module({
   providers: [PostsService, JwtService],
@@ -15,6 +16,7 @@ import { JwtService } from '@nestjs/jwt';
   imports: [
     SequelizeModule.forFeature([Post, Profile, User]),
     FilesModule,
+    FirebaseModule,
     forwardRef(() => ProfileModule),
   ],
   exports: [PostsService],

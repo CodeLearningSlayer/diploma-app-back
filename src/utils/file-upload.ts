@@ -22,3 +22,13 @@ export const editFileName = (req, file, callback) => {
     .join('');
   callback(null, `${name}${randomName}${fileExtName}`);
 };
+
+export const createUniqueName = (file) => {
+  const name = file.originalname.split('.')[0].replaceAll(' ', '');
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(4)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 10).toString(10))
+    .join('');
+  return `${name}${randomName}${fileExtName}`;
+};

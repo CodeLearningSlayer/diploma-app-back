@@ -20,7 +20,7 @@ export class FilesController {
   }
 
   @Post('upload/video')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {}))
   uploadVideo(@UploadedFile() file: Express.Multer.File) {
     console.log(file);
   }

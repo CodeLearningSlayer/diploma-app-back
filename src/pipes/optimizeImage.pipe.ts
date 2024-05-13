@@ -20,6 +20,7 @@ export class SharpPipe
     const originalName = path.parse(image.originalname).name;
     const filename =
       Date.now() + '-' + originalName.replaceAll(' ', '') + '.webp';
+
     const filePath = path.resolve(__dirname, '..', 'static');
     if (!fs.existsSync(filePath)) {
       fs.mkdirSync(filePath, { recursive: true });
