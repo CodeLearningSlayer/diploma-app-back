@@ -4,6 +4,7 @@ import { Profile } from './profile.model';
 import { CreateProfileDto } from './dto/create-profile';
 import { StartProfileDto } from './dto/start-profile';
 import { PostsService } from 'src/posts/posts.service';
+import { translit } from 'src/utils/translit-name';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const uniqueSlug = require('unique-slug');
 
@@ -54,7 +55,10 @@ export class ProfileService {
       avatar: dto.avatar,
       fullName: `${dto.name} ${dto.surname}`,
       profession: dto.profession,
-      slug: uniqueSlug(`${dto.name} ${dto.surname}`),
+      slug:
+        translit(`${dto.name}${dto.surname}`) +
+        '-' +
+        uniqueSlug(`${dto.name} ${dto.surname}`.toLowerCase()),
     });
     await profile.save();
 

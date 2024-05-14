@@ -1,9 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
+  Param,
   Post,
   Req,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,12 +22,13 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileFieldsInterceptor([{ name: 'img' }, { name: 'video' }]))
-  createPost(
-    @Req() req: Request & { user: User },
-    @Body() dto: CreatePostDto,
-    @UploadedFiles()
-    files: { img: Express.Multer.File[]; video: Express.Multer.File[] },
-  ) {
-    return this.postsService.create(dto, files, req.user.id);
+  createPost(@Req() req: Request & { user: User }, @Body() dto: CreatePostDto) {
+    return this.postsService.create(dto, req.user.id);
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  deletePost(@Param('id') id: number) {
+    return this.postsService.delete(id);
   }
 }
