@@ -17,6 +17,7 @@ import * as path from 'path';
 import { Profile } from './profile/profile.model';
 import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from './firebase/firebase.module';
+import { FriendshipModule } from './friendship/friendship.module';
 
 @Module({
   providers: [],
@@ -53,6 +54,7 @@ import { FirebaseModule } from './firebase/firebase.module';
     FilesModule,
     ProfileModule,
     FirebaseModule,
+    FriendshipModule,
   ],
 })
 export class AppModule {}

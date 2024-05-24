@@ -59,6 +59,7 @@ export class ProfileService {
         translit(`${dto.name}${dto.surname}`) +
         '-' +
         uniqueSlug(`${dto.name} ${dto.surname}`.toLowerCase()),
+      isPrimaryInformationFilled: true,
     });
     await profile.save();
 

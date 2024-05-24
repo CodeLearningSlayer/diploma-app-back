@@ -10,6 +10,7 @@ import {
 
 import { Post } from 'src/posts/posts.model';
 import { User } from 'src/users/users.model';
+import { Friendship } from '../friendship/profile-contact.model';
 
 interface ProfileCreationAttrs {
   fullName: string;
@@ -24,6 +25,7 @@ interface ProfileCreationAttrs {
   avatar: string;
   education: string;
   skills: string;
+  isPrimaryInformationFilled: boolean;
 }
 
 @Table({ tableName: 'profiles' })
@@ -41,6 +43,12 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
     allowNull: true,
   })
   fullName: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isPrimaryInformationFilled: boolean;
 
   @Column({
     type: DataType.STRING,
@@ -112,4 +120,10 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
 
   @HasMany(() => Post)
   posts: Post[];
+
+  @HasMany(() => Friendship, 'profileSlug')
+  friends: Friendship[];
+
+  @HasMany(() => Friendship, 'contactProfileSlug')
+  friendRequests: Friendship[];
 }

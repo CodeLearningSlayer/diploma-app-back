@@ -32,7 +32,7 @@ export class ProfileController {
     return this.profileService.getMyAccount(req.user.id);
   }
 
-  @ApiOperation({ summary: 'Получение моего профиля' })
+  @ApiOperation({ summary: 'Получение профиля по слагу' })
   @Get('/:slug')
   // @UseGuards(JwtAuthGuard)
   GetUserBySlug(@Param() params: { slug: string }) {
