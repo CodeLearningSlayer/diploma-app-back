@@ -18,18 +18,25 @@ export class Friendship extends Model<Friendship> {
   id: number;
 
   @ForeignKey(() => Profile)
-  @Column({ type: DataType.STRING })
-  profileSlug: string;
+  @Column({ type: DataType.INTEGER })
+  profileId: number;
 
-  @BelongsTo(() => Profile, 'profileSlug')
+  @BelongsTo(() => Profile, 'profileId')
   profile: Profile;
 
   @ForeignKey(() => Profile)
-  @Column({ type: DataType.STRING })
-  contactProfileSlug: string;
+  @Column({ type: DataType.INTEGER })
+  friendProfileId: number;
 
-  @BelongsTo(() => Profile, 'contactProfileSlug')
+  @BelongsTo(() => Profile, 'friendProfileId')
   friend: Profile;
+
+  @ForeignKey(() => Profile)
+  @Column({ type: DataType.INTEGER })
+  initiatorProfileId: number;
+
+  @BelongsTo(() => Profile, 'initiatorProfileId')
+  initiator: Profile;
 
   @Column({
     type: DataType.BOOLEAN,

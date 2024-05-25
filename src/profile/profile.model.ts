@@ -121,9 +121,9 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
   @HasMany(() => Post)
   posts: Post[];
 
-  @HasMany(() => Friendship, 'profileSlug')
+  @HasMany(() => Friendship)
   friends: Friendship[];
 
-  @HasMany(() => Friendship, 'contactProfileSlug')
+  @HasMany(() => Friendship)
   friendRequests: Friendship[];
 }

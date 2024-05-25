@@ -3,13 +3,13 @@ import { FriendshipService } from './friendship.service';
 
 @Controller('friends')
 export class FriendshipController {
-  constructor(private frinedshipService: FriendshipService) {}
+  constructor(private friendshipService: FriendshipService) {}
 
-  @Post(':userSlug/add/:friendSlug')
+  @Post(':profileId/add/:friendProfileId')
   addFriend(
-    @Param('userSlug') userSlug: string,
-    @Param('friendSlug') friendSlug: string,
+    @Param('profileId') profileId: number,
+    @Param('friendProfileId') friendProfileId: number,
   ) {
-    return this.frinedshipService.addFriend(userSlug, friendSlug);
+    return this.friendshipService.addFriend(profileId, friendProfileId);
   }
 }

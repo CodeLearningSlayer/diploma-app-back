@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
@@ -30,6 +31,17 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   getMyAccount(@Req() req: Request & { user: User }) {
     return this.profileService.getMyAccount(req.user.id);
+  }
+
+  @ApiOperation({ summary: 'recommended friends' })
+  @Get('/recommended-friends')
+  @UseGuards(JwtAuthGuard)
+  GetRecommendedFriends(
+    @Query('offset') offset: string,
+    @Query('limit') limit: string,
+    @Req() req,
+  ) {
+    return this.profileService.getRecommendedFriends(req.user, +offset, +limit);
   }
 
   @ApiOperation({ summary: 'Получение профиля по слагу' })

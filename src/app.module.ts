@@ -18,6 +18,7 @@ import { Profile } from './profile/profile.model';
 import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from './firebase/firebase.module';
 import { FriendshipModule } from './friendship/friendship.module';
+import { Friendship } from './friendship/profile-contact.model';
 
 @Module({
   providers: [],
@@ -36,7 +37,7 @@ import { FriendshipModule } from './friendship/friendship.module';
         username: configService.get('username'),
         password: configService.get('password'),
         database: configService.get('database'),
-        models: [User, Role, UserRoles, Profile, Post],
+        models: [User, Role, UserRoles, Profile, Post, Friendship],
         autoLoadModels: true,
       }),
       inject: [ConfigService],
