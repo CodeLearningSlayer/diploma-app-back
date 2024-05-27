@@ -7,6 +7,7 @@ import { translit } from 'src/utils/translit-name';
 import { Op } from 'sequelize';
 import { Post } from 'src/posts/posts.model';
 import { User } from 'src/users/users.model';
+import { Friendship } from 'src/friendship/profile-contact.model';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const uniqueSlug = require('unique-slug');
 
@@ -14,6 +15,7 @@ const uniqueSlug = require('unique-slug');
 export class ProfileService {
   constructor(
     @InjectModel(Profile) private profileRepository: typeof Profile,
+    @InjectModel(Friendship) private friendshipRepository: typeof Friendship,
   ) {}
 
   async createProfile(dto: CreateProfileDto) {
@@ -71,18 +73,38 @@ export class ProfileService {
   }
 
   async getRecommendedFriends(user: User, offset: number, limit: number) {
-    const profiles = await this.profileRepository.findAll({
+    const profile = await this.profileRepository.findOne({
+      where: { userId: user.id },
+    });
+
+    console.log(profile.id, 'PROFILE ID');
+
+    const friends = await this.friendshipRepository.findAll({
+      where: {
+        [Op.or]: [{ profileId: profile.id }, { friendProfileId: profile.id }],
+      },
+    });
+
+    const friendsIds = new Set<number>();
+
+    friends.forEach((item) => {
+      friendsIds.add(item.profileId);
+      friendsIds.add(item.friendProfileId);
+    });
+
+    const recommendations = await this.profileRepository.findAll({
       limit,
       offset,
       where: {
         isPrimaryInformationFilled: true,
-        [Op.not]: {
-          userId: user.id,
+        id: {
+          [Op.notIn]: [profile.id, ...friendsIds],
         },
       },
     });
+
     return {
-      peoples: profiles,
+      peoples: recommendations,
     };
   }
 }

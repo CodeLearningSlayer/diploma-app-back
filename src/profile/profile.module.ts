@@ -7,12 +7,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Profile } from './profile.model';
 import { Post } from 'src/posts/posts.model';
 import { PostsModule } from 'src/posts/posts.module';
+import { Friendship } from 'src/friendship/profile-contact.model';
 
 @Module({
   controllers: [ProfileController],
   providers: [ProfileService, JwtService],
   imports: [
-    SequelizeModule.forFeature([User, Profile, Post]),
+    SequelizeModule.forFeature([User, Profile, Post, Friendship]),
     forwardRef(() => PostsModule),
   ],
   exports: [ProfileService],
