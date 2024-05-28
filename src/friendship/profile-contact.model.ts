@@ -43,4 +43,10 @@ export class Friendship extends Model<Friendship> {
     defaultValue: false,
   })
   isAccepted: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isDeclined: boolean;
 }

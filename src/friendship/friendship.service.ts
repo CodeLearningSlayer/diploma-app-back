@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Friendship } from './profile-contact.model';
 import { Op } from 'sequelize';
 import { Profile } from 'src/profile/profile.model';
+import { getUniqueProfiles } from 'src/utils/get-unique-profiles';
 
 @Injectable()
 export class FriendshipService {
@@ -11,16 +12,39 @@ export class FriendshipService {
   ) {}
 
   async addFriend(profileId: number, friendProfileId: number) {
-    return this.friendshipModel.create({
-      profileId,
-      friendProfileId,
-      initiatorProfileId: profileId,
+    const friendship = await this.friendshipModel.findOne({
+      where: {
+        [Op.or]: [
+          {
+            profileId,
+            friendProfileId,
+          },
+          {
+            profileId: friendProfileId,
+            friendProfileId: profileId,
+          },
+        ],
+        isAccepted: false,
+      },
     });
+
+    if (!friendship) {
+      return this.friendshipModel.create({
+        profileId,
+        friendProfileId,
+        initiatorProfileId: profileId,
+      });
+    }
   }
 
   async acceptFriend(profileId: number, friendProfileId: number) {
     const friendship = await this.friendshipModel.findOne({
-      where: { profileId, friendProfileId },
+      where: {
+        [Op.or]: [
+          { profileId, friendProfileId },
+          { profileId: friendProfileId, friendProfileId: profileId },
+        ],
+      },
     });
 
     if (friendship) {
@@ -85,10 +109,81 @@ export class FriendshipService {
   }
 
   async getFriendRequests(profileId: number): Promise<Friendship[]> {
-    return this.friendshipModel.findAll({
-      where: { profileId, isAccepted: false },
-      include: ['user'],
+    const friendships = await this.friendshipModel.findAll({
+      where: {
+        [Op.or]: [
+          {
+            profileId,
+            initiatorProfileId: {
+              [Op.ne]: profileId,
+            },
+            isAccepted: false,
+          },
+          {
+            friendProfileId: profileId,
+            initiatorProfileId: {
+              [Op.ne]: profileId,
+            },
+            isAccepted: false,
+          },
+        ],
+      },
+      include: [
+        {
+          model: Profile,
+          as: 'profile',
+          required: false,
+        },
+        {
+          model: Profile,
+          as: 'friend',
+          required: false,
+        },
+      ],
     });
+
+    const uniqueFriends = getUniqueProfiles(friendships, profileId);
+    return uniqueFriends;
+  }
+
+  async getDeclinedFriendsRequest(profileId: number) {
+    const friendships = await this.friendshipModel.findAll({
+      where: {
+        [Op.or]: [
+          {
+            profileId,
+            initiatorProfileId: {
+              [Op.ne]: profileId,
+            },
+            isAccepted: false,
+            isDeclined: true,
+          },
+          {
+            friendProfileId: profileId,
+            initiatorProfileId: {
+              [Op.ne]: profileId,
+            },
+            isAccepted: false,
+            isDeclined: true,
+          },
+        ],
+      },
+      include: [
+        {
+          model: Profile,
+          as: 'profile',
+          required: false,
+        },
+        {
+          model: Profile,
+          as: 'friend',
+          required: false,
+        },
+      ],
+    });
+
+    const uniqueFriends = getUniqueProfiles(friendships, profileId);
+    return uniqueFriends;
   }
 
   async deleteFriend(profileId: number, friendProfileId: number) {
@@ -106,13 +201,25 @@ export class FriendshipService {
         ],
       },
     });
-    if (friendship) {
+
+    if (!friendship) {
+      throw new HttpException('Friendship not found', HttpStatus.BAD_REQUEST);
+    }
+
+    if (friendship.isAccepted) {
       friendship.isAccepted = false;
       friendship.initiatorProfileId = friendProfileId;
       await friendship.save();
       return;
+    } else if (friendship.initiatorProfileId === profileId) {
+      friendship.destroy();
+      await friendship.save();
+      return;
+    } else {
+      friendship.isDeclined = true;
+      await friendship.save();
+      return;
     }
-    throw new HttpException('Friendship not found', HttpStatus.BAD_REQUEST);
   }
 
   async cancelDeleteFriend(profileId: number, friendProfileId: number) {
@@ -168,21 +275,42 @@ export class FriendshipService {
       ],
     });
 
-    const friends = [];
-    for (const friendship of friendships) {
-      if (friendship.profile && friendship.profile.id !== profileId) {
-        friends.push(friendship.profile);
-      }
-      if (friendship.friend && friendship.friend.id !== profileId) {
-        friends.push(friendship.friend);
-      }
-    }
+    const uniqueFriends = getUniqueProfiles(friendships, profileId);
 
-    // Удаляем дублирующиеся профили
-    const uniqueFriends = Array.from(
-      new Set(friends.map((friend) => friend.id)),
-    ).map((id) => friends.find((friend) => friend.id === id));
+    return uniqueFriends;
+  }
 
+  async getSentRequests(profileId: number) {
+    const friendships = await this.friendshipModel.findAll({
+      where: {
+        [Op.or]: [
+          {
+            profileId,
+            initiatorProfileId: profileId,
+            isAccepted: false,
+          },
+          {
+            friendProfileId: profileId,
+            initiatorProfileId: profileId,
+            isAccepted: false,
+          },
+        ],
+      },
+      include: [
+        {
+          model: Profile,
+          as: 'profile',
+          required: false,
+        },
+        {
+          model: Profile,
+          as: 'friend',
+          required: false,
+        },
+      ],
+    });
+
+    const uniqueFriends = getUniqueProfiles(friendships, profileId);
     return uniqueFriends;
   }
 }
