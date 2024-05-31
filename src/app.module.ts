@@ -19,6 +19,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from './firebase/firebase.module';
 import { FriendshipModule } from './friendship/friendship.module';
 import { Friendship } from './friendship/profile-contact.model';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
+import { Like } from './likes/likes.model';
+import { Comment } from './comments/comments.model';
 
 @Module({
   providers: [],
@@ -37,7 +41,16 @@ import { Friendship } from './friendship/profile-contact.model';
         username: configService.get('username'),
         password: configService.get('password'),
         database: configService.get('database'),
-        models: [User, Role, UserRoles, Profile, Post, Friendship],
+        models: [
+          User,
+          Role,
+          UserRoles,
+          Profile,
+          Post,
+          Friendship,
+          Like,
+          Comment,
+        ],
         autoLoadModels: true,
       }),
       inject: [ConfigService],
@@ -56,6 +69,8 @@ import { Friendship } from './friendship/profile-contact.model';
     ProfileModule,
     FirebaseModule,
     FriendshipModule,
+    LikesModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

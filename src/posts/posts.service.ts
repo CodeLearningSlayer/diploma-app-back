@@ -3,6 +3,9 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.model';
 import { ProfileService } from 'src/profile/profile.service';
+import { Like } from 'src/likes/likes.model';
+import { Comment } from 'src/comments/comments.model';
+import { Profile } from 'src/profile/profile.model';
 
 @Injectable()
 export class PostsService {
@@ -36,7 +39,16 @@ export class PostsService {
   async getProfilePosts(profileId: number) {
     const posts = await this.postRepository.findAll({
       where: { profileId },
-      order: ['id', 'DESC'],
+      include: [
+        {
+          model: Like,
+        },
+        {
+          model: Comment,
+          limit: 3,
+          include: [Profile],
+        },
+      ],
     });
     return {
       posts,

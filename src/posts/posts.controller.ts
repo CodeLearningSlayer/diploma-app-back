@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   UseGuards,
+  Get,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -30,5 +31,11 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   deletePost(@Param('id') id: number) {
     return this.postsService.delete(id);
+  }
+
+  @Get(':profileId/posts')
+  // @UseGuards(JwtAuthGuard)
+  GetProfilePosts(@Param('profileId') profileId: string) {
+    return this.postsService.getProfilePosts(+profileId);
   }
 }

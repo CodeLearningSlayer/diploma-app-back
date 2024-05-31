@@ -11,6 +11,8 @@ import {
 import { Post } from 'src/posts/posts.model';
 import { User } from 'src/users/users.model';
 import { Friendship } from '../friendship/profile-contact.model';
+import { Like } from 'src/likes/likes.model';
+import { Comment } from 'src/comments/comments.model';
 
 interface ProfileCreationAttrs {
   fullName: string;
@@ -126,4 +128,10 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
 
   @HasMany(() => Friendship)
   friendRequests: Friendship[];
+
+  @HasMany(() => Like)
+  likes: Like[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }

@@ -72,12 +72,43 @@ export class ProfileService {
     };
   }
 
-  async getRecommendedFriends(user: User, offset: number, limit: number) {
+  async searchRecommendedFriends(user: User, searchTerm: string) {
     const profile = await this.profileRepository.findOne({
       where: { userId: user.id },
     });
 
-    console.log(profile.id, 'PROFILE ID');
+    const friends = await this.friendshipRepository.findAll({
+      where: {
+        [Op.or]: [{ profileId: profile.id }, { friendProfileId: profile.id }],
+      },
+    });
+
+    const friendsIds = new Set<number>();
+
+    friends.forEach((item) => {
+      friendsIds.add(item.profileId);
+      friendsIds.add(item.friendProfileId);
+    });
+
+    const recommendations = await this.profileRepository.findAll({
+      where: {
+        isPrimaryInformationFilled: true,
+        id: {
+          [Op.notIn]: [profile.id, ...friendsIds],
+        },
+        fullName: {
+          [Op.like]: `%${searchTerm}%`,
+        },
+      },
+    });
+
+    return { peoples: recommendations };
+  }
+
+  async getRecommendedFriends(user: User, offset: number, limit: number) {
+    const profile = await this.profileRepository.findOne({
+      where: { userId: user.id },
+    });
 
     const friends = await this.friendshipRepository.findAll({
       where: {

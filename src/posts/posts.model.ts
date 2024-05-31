@@ -6,8 +6,11 @@ import {
   Model,
   BelongsTo,
   ForeignKey,
+  HasMany,
 } from 'sequelize-typescript';
+import { Like } from 'src/likes/likes.model';
 import { Profile } from 'src/profile/profile.model';
+import { Comment } from 'src/comments/comments.model';
 
 interface PostCreationAttrs {
   text: string;
@@ -67,4 +70,10 @@ export class Post extends Model<Post, PostCreationAttrs> {
 
   @BelongsTo(() => Profile)
   profile: Profile;
+
+  @HasMany(() => Like)
+  likes: Like[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }
