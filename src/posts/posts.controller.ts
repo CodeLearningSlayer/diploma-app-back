@@ -33,6 +33,7 @@ export class PostsController {
     return this.postsService.delete(id);
   }
 
+  // тут разобраться с интерфейсами
   @Get(':profileId/posts')
   // @UseGuards(JwtAuthGuard)
   GetProfilePosts(@Param('profileId') profileId: string) {

@@ -24,7 +24,7 @@ export class CommentsController {
     return this.commentsService.editComment(editCommentDto);
   }
 
-  @Delete(':profileId/comment/:postId')
+  @Delete('/profile/:profileId/post/:postId/comment/:commentId')
   deleteComment(@Param('commentId') commentId: string) {
     return this.commentsService.deleteComment(+commentId);
   }

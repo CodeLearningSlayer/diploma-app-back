@@ -17,8 +17,13 @@ export class CommentsService {
       text: createCommetDto.text,
     });
 
+    const commentWithProfile = await this.commentRepository.findOne({
+      where: { id: comment.id },
+      include: [{ model: Profile }],
+    });
+
     return {
-      comment,
+      comment: commentWithProfile,
     };
   }
 

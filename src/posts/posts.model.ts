@@ -20,6 +20,7 @@ interface PostCreationAttrs {
     video: string;
     thumbnail: string;
   }>;
+  likesCount?: number;
 }
 
 @Table({ tableName: 'posts' })
@@ -76,4 +77,11 @@ export class Post extends Model<Post, PostCreationAttrs> {
 
   @HasMany(() => Comment)
   comments: Comment[];
+
+  get likesCount(): number {
+    if (this.likes) {
+      return this.likes.length;
+    }
+    return 0;
+  }
 }
