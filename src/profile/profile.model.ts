@@ -13,6 +13,8 @@ import { User } from 'src/users/users.model';
 import { Friendship } from '../friendship/profile-contact.model';
 import { Like } from 'src/likes/likes.model';
 import { Comment } from 'src/comments/comments.model';
+import { Message } from 'src/messages/messages.model';
+import { Chat } from 'src/chats/chats.model';
 
 interface ProfileCreationAttrs {
   fullName: string;
@@ -134,4 +136,13 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
 
   @HasMany(() => Comment)
   comments: Comment[];
+
+  @HasMany(() => Message)
+  messages: Message[];
+
+  @HasMany(() => Chat, 'profileId1')
+  initiatedChats: Chat[];
+
+  @HasMany(() => Chat, 'profileId2')
+  receivedChats: Chat[];
 }

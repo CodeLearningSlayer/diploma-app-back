@@ -6,11 +6,13 @@ import { ProfileService } from 'src/profile/profile.service';
 import { Like } from 'src/likes/likes.model';
 import { Comment } from 'src/comments/comments.model';
 import { Profile } from 'src/profile/profile.model';
+import { PostDto } from './dto/post.dto';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post) private postRepository: typeof Post,
+    @InjectModel(Comment) private commentRepository: typeof Comment,
     @Inject(forwardRef(() => ProfileService))
     private profileService: ProfileService,
   ) {}
@@ -25,8 +27,22 @@ export class PostsService {
         profileId: profile.id,
       });
 
+      const postWithComments = await this.postRepository.findOne({
+        where: {
+          id: post.id,
+        },
+        include: [
+          {
+            model: Like,
+          },
+          {
+            model: Comment,
+          },
+        ],
+      });
+
       await post.save();
-      return post;
+      return postWithComments;
     } catch (e) {
       console.log(e);
     }
@@ -36,9 +52,10 @@ export class PostsService {
     await this.postRepository.destroy({ where: { id } });
   }
 
-  async getProfilePosts(profileId: number) {
+  async getProfilePosts(profileId: number): Promise<{ posts: PostDto[] }> {
     const posts = await this.postRepository.findAll({
       where: { profileId },
+      order: [['id', 'DESC']],
       include: [
         {
           model: Like,
@@ -50,8 +67,22 @@ export class PostsService {
         },
       ],
     });
+
+    const postsWithCommentCount = await Promise.all(
+      posts.map(async (post) => {
+        const commentsCount = await this.commentRepository.count({
+          where: { postId: post.id },
+        });
+
+        return {
+          ...post.get({ plain: true }),
+          commentsCount,
+        };
+      }),
+    );
+
     return {
-      posts,
+      posts: postsWithCommentCount,
     };
   }
 }

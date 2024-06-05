@@ -18,5 +18,5 @@ export class PostDto {
 
   comments: Comment[];
 
-  likesCount: number;
+  commentsCount: number;
 }

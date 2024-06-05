@@ -23,6 +23,10 @@ import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { Like } from './likes/likes.model';
 import { Comment } from './comments/comments.model';
+import { ChatsModule } from './chats/chats.module';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/messages.model';
+import { Chat } from './chats/chats.model';
 
 @Module({
   providers: [],
@@ -50,6 +54,8 @@ import { Comment } from './comments/comments.model';
           Friendship,
           Like,
           Comment,
+          Message,
+          Chat,
         ],
         autoLoadModels: true,
       }),
@@ -71,6 +77,8 @@ import { Comment } from './comments/comments.model';
     FriendshipModule,
     LikesModule,
     CommentsModule,
+    ChatsModule,
+    MessagesModule,
   ],
 })
 export class AppModule {}

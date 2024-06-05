@@ -51,7 +51,7 @@ export class CommentsService {
     throw new HttpException('Comment not found', HttpStatus.BAD_REQUEST);
   }
 
-  async getPostComments(postId: number) {
+  async getPostComments(postId: number, offset = 0) {
     const comments = await this.commentRepository.findAll({
       where: {
         postId,
@@ -59,6 +59,7 @@ export class CommentsService {
       include: {
         model: Profile,
       },
+      offset: offset,
     });
 
     return {

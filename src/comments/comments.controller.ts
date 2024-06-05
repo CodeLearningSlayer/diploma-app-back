@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { EditCommentDto, LeaveCommentDto } from './dto/comment';
@@ -24,13 +25,16 @@ export class CommentsController {
     return this.commentsService.editComment(editCommentDto);
   }
 
-  @Delete('/profile/:profileId/post/:postId/comment/:commentId')
+  @Delete('/delete/:commentId')
   deleteComment(@Param('commentId') commentId: string) {
     return this.commentsService.deleteComment(+commentId);
   }
 
-  @Get(':postId')
-  getPostComments(@Param('postId') postId: string) {
-    return this.commentsService.getPostComments(+postId);
+  @Get('/post/:postId')
+  getPostComments(
+    @Param('postId') postId: string,
+    @Query('offset') offset: string,
+  ) {
+    return this.commentsService.getPostComments(+postId, +offset);
   }
 }

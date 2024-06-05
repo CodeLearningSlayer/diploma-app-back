@@ -9,14 +9,17 @@ import { User } from 'src/users/users.model';
 import { ProfileModule } from 'src/profile/profile.module';
 import { JwtService } from '@nestjs/jwt';
 import { FirebaseModule } from 'src/firebase/firebase.module';
+import { CommentsModule } from 'src/comments/comments.module';
+import { Comment } from 'src/comments/comments.model';
 
 @Module({
   providers: [PostsService, JwtService],
   controllers: [PostsController],
   imports: [
-    SequelizeModule.forFeature([Post, Profile, User]),
+    SequelizeModule.forFeature([Post, Profile, User, Comment]),
     FilesModule,
     FirebaseModule,
+    CommentsModule,
     forwardRef(() => ProfileModule),
   ],
   exports: [PostsService],
