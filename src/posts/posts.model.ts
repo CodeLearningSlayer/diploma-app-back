@@ -6,14 +6,21 @@ import {
   Model,
   BelongsTo,
   ForeignKey,
+  HasMany,
 } from 'sequelize-typescript';
+import { Like } from 'src/likes/likes.model';
 import { Profile } from 'src/profile/profile.model';
+import { Comment } from 'src/comments/comments.model';
 
 interface PostCreationAttrs {
-  title: string;
-  content: string;
-  userId: number;
-  image: string;
+  text: string;
+  profileId: number;
+  images: string[];
+  videos: Array<{
+    video: string;
+    thumbnail: string;
+  }>;
+  likesCount?: number;
 }
 
 @Table({ tableName: 'posts' })
@@ -30,17 +37,33 @@ export class Post extends Model<Post, PostCreationAttrs> {
   @ApiProperty({ example: 'mail@ya.ru', description: 'Эл. почта' })
   @Column({
     type: DataType.STRING,
-    unique: true,
     allowNull: false,
   })
-  title: string;
+  text: string;
 
   @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.ARRAY(DataType.STRING),
+    allowNull: true,
   })
-  content: string;
+  images: string[];
+
+  @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
+  @Column({
+    type: DataType.ARRAY(DataType.JSON),
+    allowNull: true,
+  })
+  videos: Array<{
+    video: string;
+    thumbnail: string;
+  }>;
+
+  @ApiProperty({ example: 'dhjhfskfdsk', description: 'Пароль' })
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: true,
+  })
+  event: string;
 
   @ForeignKey(() => Profile)
   @Column({ type: DataType.INTEGER })
@@ -48,4 +71,17 @@ export class Post extends Model<Post, PostCreationAttrs> {
 
   @BelongsTo(() => Profile)
   profile: Profile;
+
+  @HasMany(() => Like)
+  likes: Like[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
+
+  get likesCount(): number {
+    if (this.likes) {
+      return this.likes.length;
+    }
+    return 0;
+  }
 }

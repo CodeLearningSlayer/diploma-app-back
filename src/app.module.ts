@@ -16,6 +16,17 @@ import configurations from './config';
 import * as path from 'path';
 import { Profile } from './profile/profile.model';
 import { MulterModule } from '@nestjs/platform-express';
+import { FirebaseModule } from './firebase/firebase.module';
+import { FriendshipModule } from './friendship/friendship.module';
+import { Friendship } from './friendship/profile-contact.model';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
+import { Like } from './likes/likes.model';
+import { Comment } from './comments/comments.model';
+import { ChatsModule } from './chats/chats.module';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/messages.model';
+import { Chat } from './chats/chats.model';
 
 @Module({
   providers: [],
@@ -34,7 +45,18 @@ import { MulterModule } from '@nestjs/platform-express';
         username: configService.get('username'),
         password: configService.get('password'),
         database: configService.get('database'),
-        models: [User, Role, UserRoles, Profile, Post],
+        models: [
+          User,
+          Role,
+          UserRoles,
+          Profile,
+          Post,
+          Friendship,
+          Like,
+          Comment,
+          Message,
+          Chat,
+        ],
         autoLoadModels: true,
       }),
       inject: [ConfigService],
@@ -51,6 +73,12 @@ import { MulterModule } from '@nestjs/platform-express';
     PostsModule,
     FilesModule,
     ProfileModule,
+    FirebaseModule,
+    FriendshipModule,
+    LikesModule,
+    CommentsModule,
+    ChatsModule,
+    MessagesModule,
   ],
 })
 export class AppModule {}

@@ -10,6 +10,11 @@ import {
 
 import { Post } from 'src/posts/posts.model';
 import { User } from 'src/users/users.model';
+import { Friendship } from '../friendship/profile-contact.model';
+import { Like } from 'src/likes/likes.model';
+import { Comment } from 'src/comments/comments.model';
+import { Message } from 'src/messages/messages.model';
+import { Chat } from 'src/chats/chats.model';
 
 interface ProfileCreationAttrs {
   fullName: string;
@@ -24,6 +29,7 @@ interface ProfileCreationAttrs {
   avatar: string;
   education: string;
   skills: string;
+  isPrimaryInformationFilled: boolean;
 }
 
 @Table({ tableName: 'profiles' })
@@ -41,6 +47,12 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
     allowNull: true,
   })
   fullName: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isPrimaryInformationFilled: boolean;
 
   @Column({
     type: DataType.STRING,
@@ -112,4 +124,25 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
 
   @HasMany(() => Post)
   posts: Post[];
+
+  @HasMany(() => Friendship)
+  friends: Friendship[];
+
+  @HasMany(() => Friendship)
+  friendRequests: Friendship[];
+
+  @HasMany(() => Like)
+  likes: Like[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
+
+  @HasMany(() => Message)
+  messages: Message[];
+
+  @HasMany(() => Chat, 'profileId1')
+  initiatedChats: Chat[];
+
+  @HasMany(() => Chat, 'profileId2')
+  receivedChats: Chat[];
 }

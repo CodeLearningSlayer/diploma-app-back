@@ -1,23 +1,42 @@
 import {
   Body,
   Controller,
+  Delete,
+  Param,
   Post,
-  UploadedFiles,
+  Req,
+  UseGuards,
+  Get,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from 'src/users/users.model';
+import { Request } from 'express';
 
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}
 
   @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'picture' }, { name: 'video' }]),
-  )
-  createPost(@Body() dto: CreatePostDto, @UploadedFiles() files) {
-    return this.postsService.create(dto, files);
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'img' }, { name: 'video' }]))
+  createPost(@Req() req: Request & { user: User }, @Body() dto: CreatePostDto) {
+    return this.postsService.create(dto, req.user.id);
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  deletePost(@Param('id') id: number) {
+    return this.postsService.delete(id);
+  }
+
+  // тут разобраться с интерфейсами
+  @Get(':profileId/posts')
+  // @UseGuards(JwtAuthGuard)
+  GetProfilePosts(@Param('profileId') profileId: string) {
+    return this.postsService.getProfilePosts(+profileId);
   }
 }
