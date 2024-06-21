@@ -6,10 +6,16 @@ import { ChatsController } from './chats.controller';
 import { JwtService } from '@nestjs/jwt';
 import { ProfileModule } from 'src/profile/profile.module';
 import { Chat } from './chats.model';
+import { ChatGateway } from './chat.gateway';
+import { MessagesModule } from 'src/messages/messages.module';
 
 @Module({
-  providers: [ChatsService, JwtService],
-  imports: [SequelizeModule.forFeature([Message, Chat]), ProfileModule],
+  providers: [ChatsService, JwtService, ChatGateway],
+  imports: [
+    SequelizeModule.forFeature([Message, Chat]),
+    ProfileModule,
+    MessagesModule,
+  ],
   controllers: [ChatsController],
 })
 export class ChatsModule {}

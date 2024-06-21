@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FirebaseApp } from 'firebase/app';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import * as fs from 'fs';
@@ -15,10 +14,7 @@ export enum FileType {
 
 @Injectable()
 export class FilesService {
-  constructor(
-    private configService: ConfigService,
-    @Inject('FIREBASE_APP') private firebaseApp: FirebaseApp,
-  ) {}
+  constructor(@Inject('FIREBASE_APP') private firebaseApp: FirebaseApp) {}
   async createFile(type: FileType, file: Express.Multer.File): Promise<string> {
     try {
       // TODO внести Multer, переписать всё

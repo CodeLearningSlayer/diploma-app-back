@@ -118,6 +118,7 @@ export class FriendshipService {
               [Op.ne]: profileId,
             },
             isAccepted: false,
+            isDeclined: false,
           },
           {
             friendProfileId: profileId,
@@ -125,6 +126,7 @@ export class FriendshipService {
               [Op.ne]: profileId,
             },
             isAccepted: false,
+            isDeclined: false,
           },
         ],
       },
