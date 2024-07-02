@@ -4,25 +4,61 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { OnModuleInit, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { WsGuard } from './guards/ws.guard';
 import { MessagesService } from 'src/messages/messages.service';
+import { extractTokenFromHeader } from 'src/utils/extractTokenFromHeader';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { ProfileService } from 'src/profile/profile.service';
 
 @UseGuards(WsGuard)
 @WebSocketGateway({ cors: true })
-export class ChatGateway implements OnModuleInit {
-  constructor(private messagesService: MessagesService) {}
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    private messagesService: MessagesService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+    private profileService: ProfileService,
+  ) {}
   // The server is used to emit events to all clients
   @WebSocketServer()
   server: Server;
 
-  onModuleInit() {
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
-      console.log('connected');
-    });
+  private async verifyUser(client: Socket) {
+    const token = extractTokenFromHeader(client);
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get('secret'),
+      });
+      return payload ?? undefined;
+    } catch (e) {
+      console.log('Token verification error: ', e);
+    }
+  }
+
+  async handleConnection(client: Socket) {
+    const user = await this.verifyUser(client);
+    if (user) {
+      const profile = await this.profileService.getProfileByUserId(user.id);
+      profile.isOnline = true;
+      await profile.save();
+    } else {
+      client.disconnect();
+    }
+  }
+
+  async handleDisconnect(client: Socket) {
+    const user = await this.verifyUser(client);
+    if (user) {
+      const profile = await this.profileService.getProfileByUserId(user.id);
+      profile.isOnline = false;
+      await profile.save();
+    }
   }
 
   /**
@@ -36,37 +72,25 @@ export class ChatGateway implements OnModuleInit {
     @MessageBody() data: { chatId: number; profileId: number; text: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const { chatId, profileId, text } = data;
-    const res = await this.messagesService.createMessage({
-      chatId,
-      profileId,
-      text,
-    });
-    console.log(res);
-    this.server.emit('message', res.message);
+    try {
+      const { chatId, profileId, text } = data;
+      // подключение идёт каждый раз, это не круто, подключить однажды ивентом?
+      const res = await this.messagesService.createMessage({
+        chatId,
+        profileId,
+        text,
+      });
+      console.log(res);
+      this.server.to(chatId.toString()).emit('message', res.message);
+    } catch (e) {
+      client.emit('error', { message: e });
+    }
   }
 
-  // @SubscribeMessage('join')
-  // join(client: Socket, payload: any) {
-  //   client.join(payload.chatId);
-  //   this.users.push({ id: client.id, ...payload });
-  //   this.server.emit('users', this.users);
-  // }
-
-  /**
-   * When a user requests the messages for them and another user, we will filter the messages array and return the messages that match the sender and recipient
-   * @param payload The payload sent by the client
-   * @returns The messages that match the sender and recipient
-   */
-  // @SubscribeMessage('request-messages')
-  // requestMessages(@MessageBody() payload: any) {
-  //   const msgs = this.messages.filter(
-  //     (m) =>
-  //       (m.recipient == payload.recipient && m.sender == payload.sender) ||
-  //       (m.recipient == payload.sender && m.sender == payload.recipient),
-  //   );
-  //   return msgs;
-  // }
+  @SubscribeMessage('join')
+  join(client: Socket, payload: any) {
+    client.join(payload.chatId);
+  }
 
   /**
    * When a user sends a message, we'll add it to the messages array and emit the message to the recipient

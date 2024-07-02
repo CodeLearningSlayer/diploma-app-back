@@ -1,4 +1,4 @@
 export class CreateChatDto {
-  firstProfileId: number;
-  secondProfileId: number;
+  profileId1: number;
+  profileId2: number;
 }

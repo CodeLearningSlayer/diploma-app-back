@@ -110,6 +110,12 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
   skills: string;
 
   @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isOnline: boolean;
+
+  @Column({
     type: DataType.STRING,
     allowNull: true,
   })

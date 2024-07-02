@@ -24,33 +24,36 @@ export class ChatsService {
   }
 
   public async CreateChat(createChatDto: CreateChatDto) {
-    const isCreated = this.chatRepository.findOne({
+    const isCreated = await this.chatRepository.findOne({
       where: {
         [Op.or]: [
           {
-            profileId1: createChatDto.firstProfileId,
-            profileId2: createChatDto.secondProfileId,
+            profileId1: createChatDto.profileId1,
+            profileId2: createChatDto.profileId2,
           },
           {
-            profileId1: createChatDto.secondProfileId,
-            profile2: createChatDto.firstProfileId,
+            profileId1: createChatDto.profileId2,
+            profileId2: createChatDto.profileId1,
           },
         ],
       },
     });
+
     if (isCreated) {
-      throw new HttpException(
-        'This chat already exist',
-        HttpStatus.BAD_REQUEST,
-      );
+      return {
+        chat: isCreated,
+      };
     }
-    const chat = await this.chatRepository.create({ ...createChatDto });
+    const chat = await this.chatRepository.create({
+      ...createChatDto,
+    });
     return {
       chat,
     };
   }
 
   public async GetMyChats(profileId: number) {
+    console.log(profileId);
     const chats = await this.chatRepository.findAll({
       where: {
         [Op.or]: [
